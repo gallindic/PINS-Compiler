@@ -1,0 +1,20 @@
+#Rekurzivni izpis znakov od 0-z
+
+fun exit() : int = 0;
+fun putChar(c : char) : char = ' ';
+
+fun rekurzija(num : int) : void = {
+    if num >= 122 then
+        putChar((num : char));
+        exit();
+    end;
+
+    putChar((num : char));
+    num = num + 1;
+
+    rekurzija(num);
+};
+
+fun main() : void = {
+    rekurzija(48);
+};

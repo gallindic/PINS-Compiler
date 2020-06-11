@@ -41,6 +41,7 @@ public class TypeResolver extends AstFullVisitor<SemType, TypeResolver.Mode> {
 		for (AstTree tree : trees)
 			if (tree instanceof AstFunDecl)
 				tree.accept(this, Mode.BODY);
+				
 		return null;
 	}
 
@@ -53,6 +54,48 @@ public class TypeResolver extends AstFullVisitor<SemType, TypeResolver.Mode> {
 		else if(mode.equals(Mode.BODY)){
 			typeDecl.type().accept(this, mode);
 			SemAn.declaresType.get(typeDecl).define(SemAn.isType.get(typeDecl.type()));
+		}
+
+		return null;
+	}
+
+	public SemType visit(AstVarDecl varDecl, Mode mode){
+		varDecl.type().accept(this, Mode.BODY);
+
+		return null;
+	}
+
+	public SemType visit(AstAtomType atomType, Mode mode){
+		if(atomType.type().toString().equalsIgnoreCase("int")){
+			SemInteger si = new SemInteger();
+			SemAn.isType.put(atomType, si);
+			return si;
+		}
+		else if(atomType.type().toString().equalsIgnoreCase("char")){
+			SemChar sc = new SemChar();
+			SemAn.isType.put(atomType, sc);
+			return sc;
+		}
+		else if(atomType.type().toString().equalsIgnoreCase("void")){
+			SemVoid sv = new SemVoid();
+			SemAn.isType.put(atomType, sv);
+			return sv;
+		}
+
+		return null;
+	}
+
+	public SemType visit(AstNameType nameType, Mode mode){
+		if(SemAn.declaredAt.get(nameType) instanceof AstTypeDecl){
+			SemType s = SemAn.declaresType.get((AstTypeDecl) SemAn.declaredAt.get(nameType));
+			SemAn.isType.put(nameType, ((SemName)s).type());
+			return s;
+		}
+		else if(SemAn.declaredAt.get(nameType) instanceof AstVarDecl){
+			SemAn.isType.put(nameType, SemAn.isType.get(((AstVarDecl) SemAn.declaredAt.get(nameType)).type()));
+		}
+		else if(SemAn.declaredAt.get(nameType) instanceof AstParDecl){
+			SemAn.isType.put(nameType, SemAn.isType.get(((AstParDecl) SemAn.declaredAt.get(nameType)).type()));
 		}
 
 		return null;
@@ -90,15 +133,10 @@ public class TypeResolver extends AstFullVisitor<SemType, TypeResolver.Mode> {
 		return null;
 	}
 
-	public SemType visit(AstVarDecl varDecl, Mode mode){
-		varDecl.type().accept(this, Mode.BODY);
-
-		return null;
-	}
+	
 
 	public SemType visit(AstParDecl parDecl, Mode mode){
 		parDecl.type().accept(this, mode);
-
 		SemType type = SemAn.isType.get(parDecl.type());
 
 		if(type instanceof SemInteger || type instanceof SemChar || type instanceof SemPointer){
@@ -116,7 +154,7 @@ public class TypeResolver extends AstFullVisitor<SemType, TypeResolver.Mode> {
 
 	public SemType visit(AstPtrType ptrType, Mode mode){
 		SemPointer sp = new SemPointer(ptrType.baseType().accept(this, mode));
-		SemAn.isType.put(ptrType, sp);
+		SemAn.isType.put(ptrType, sp.actualType());
 		
 		return sp;
 	}
@@ -129,54 +167,22 @@ public class TypeResolver extends AstFullVisitor<SemType, TypeResolver.Mode> {
 			throw new Report.Error(arrType, "Wrong use of array!");
 		}
 
+		arrType.numElems().accept(this, mode);
+		arrType.elemType().accept(this, mode);
+
 		long numElems = Long.parseLong(((AstAtomExpr) arrType.numElems()).value());
 
 		if(numElems < 1){
 			throw new Report.Error(arrType, "Must be greater than 0!");
 		}
 
-		SemArray sa = new SemArray(arrType.elemType().accept(this, mode), numElems);
+		SemType sa = new SemArray(SemAn.isType.get(arrType.elemType()), numElems);
 		SemAn.isType.put(arrType, sa);
-
-		arrType.numElems().accept(this, mode);
 
 		return sa;
 	}
 
-	public SemType visit(AstNameType nameType, Mode mode){
-		if(SemAn.declaredAt.get(nameType) instanceof AstTypeDecl){
-			SemType s = SemAn.declaresType.get((AstTypeDecl) SemAn.declaredAt.get(nameType));
-			SemAn.isType.put(nameType, ((SemName)s).actualType());
-		}
-		else if(SemAn.declaredAt.get(nameType) instanceof AstVarDecl){
-			SemAn.isType.put(nameType, SemAn.isType.get(((AstVarDecl) SemAn.declaredAt.get(nameType)).type()));
-		}
-		else if(SemAn.declaredAt.get(nameType) instanceof AstParDecl){
-			SemAn.isType.put(nameType, SemAn.isType.get(((AstParDecl) SemAn.declaredAt.get(nameType)).type()));
-		}
-		
-		return null;
-	}
-
-	public SemType visit(AstAtomType atomType, Mode mode){
-		if(atomType.type().toString().equalsIgnoreCase("int")){
-			SemInteger si = new SemInteger();
-			SemAn.isType.put(atomType, si);
-			return si;
-		}
-		else if(atomType.type().toString().equalsIgnoreCase("char")){
-			SemChar sc = new SemChar();
-			SemAn.isType.put(atomType, sc);
-			return sc;
-		}
-		else if(atomType.type().toString().equalsIgnoreCase("void")){
-			SemVoid sv = new SemVoid();
-			SemAn.isType.put(atomType, sv);
-			return sv;
-		}
-
-		return null;
-	}
+	
 
 
 	// EXPR
@@ -185,8 +191,8 @@ public class TypeResolver extends AstFullVisitor<SemType, TypeResolver.Mode> {
 		binExpr.fstExpr().accept(this, mode);
 		binExpr.sndExpr().accept(this, mode);
 
-		SemType fstExpr = SemAn.ofType.get(binExpr.fstExpr());
-		SemType sndExpr = SemAn.ofType.get(binExpr.sndExpr());
+		SemType fstExpr = SemAn.ofType.get(binExpr.fstExpr()).actualType();
+		SemType sndExpr = SemAn.ofType.get(binExpr.sndExpr()).actualType();
 
 		if(binExpr.oper() == Oper.ADD || binExpr.oper() == Oper.SUB || binExpr.oper() == Oper.MUL || binExpr.oper() == Oper.DIV || binExpr.oper() == Oper.MOD){
 			if(!(fstExpr instanceof SemInteger) || !(sndExpr instanceof SemInteger)){
@@ -266,7 +272,7 @@ public class TypeResolver extends AstFullVisitor<SemType, TypeResolver.Mode> {
 		sfxExpr.expr().accept(this, mode);
 
 		if(sfxExpr.oper() == AstSfxExpr.Oper.PTR){
-			if(SemAn.ofType.get(sfxExpr.expr()) instanceof SemPointer){
+			if(SemAn.ofType.get(sfxExpr.expr()).actualType() instanceof SemPointer){
 				SemType baseType = ((SemPointer) SemAn.ofType.get(sfxExpr.expr())).baseType();
 				SemAn.ofType.put(sfxExpr, baseType);
 
@@ -277,7 +283,6 @@ public class TypeResolver extends AstFullVisitor<SemType, TypeResolver.Mode> {
 			}
 		}
 
-
 		return null;
 	}
 
@@ -285,9 +290,9 @@ public class TypeResolver extends AstFullVisitor<SemType, TypeResolver.Mode> {
 		arrExpr.arr().accept(this, mode);
 		arrExpr.idx().accept(this, mode);
 
-		SemType arr = SemAn.ofType.get(arrExpr.arr());
-		SemType idx = SemAn.ofType.get(arrExpr.idx());
-		System.out.println(arr + "," + idx);
+		SemType arr = SemAn.ofType.get(arrExpr.arr()).actualType();
+		SemType idx = SemAn.ofType.get(arrExpr.idx()).actualType();
+
 		if(arr instanceof SemArray){
 			if(idx instanceof SemInteger){
 				SemArray array = ((SemArray)arr);
@@ -348,6 +353,9 @@ public class TypeResolver extends AstFullVisitor<SemType, TypeResolver.Mode> {
 		else if(SemAn.declaredAt.get(nameExpr) instanceof AstParDecl){
 			SemAn.ofType.put(nameExpr, SemAn.isType.get(((AstParDecl) SemAn.declaredAt.get(nameExpr)).type()));
 		}
+		else if(SemAn.declaredAt.get(nameExpr) instanceof AstFunDecl){
+			SemAn.ofType.put(nameExpr, SemAn.isType.get(((AstFunDecl) SemAn.declaredAt.get(nameExpr)).type()));
+		}
 
 		return null;
 	}
@@ -371,12 +379,9 @@ public class TypeResolver extends AstFullVisitor<SemType, TypeResolver.Mode> {
 	}
 
 	public SemType visit(AstWhereExpr whereExpr, Mode mode){
-		whereExpr.expr().accept(this, mode);
-		
-		for(AstDecl decl : whereExpr.decls()){
-			decl.accept(this, mode);
-		}
+		whereExpr.decls().accept(this, mode);
 
+		whereExpr.expr().accept(this, mode);
 		SemType where = SemAn.ofType.get(whereExpr.expr());
 			
 		if(where instanceof SemInteger || where instanceof SemChar || where instanceof SemVoid || where instanceof SemPointer){
@@ -427,8 +432,8 @@ public class TypeResolver extends AstFullVisitor<SemType, TypeResolver.Mode> {
 		assignStmt.src().accept(this, mode);
 		assignStmt.dst().accept(this, mode);
 
-		SemType assignSrc = SemAn.ofType.get(assignStmt.src());
-		SemType assignDst = SemAn.ofType.get(assignStmt.dst());
+		SemType assignSrc = SemAn.ofType.get(assignStmt.src()).actualType();
+		SemType assignDst = SemAn.ofType.get(assignStmt.dst()).actualType();
 
 		if(assignDst instanceof SemInteger || assignDst instanceof SemChar || assignDst instanceof SemPointer &&
 		assignSrc instanceof SemInteger || assignSrc instanceof SemChar || assignSrc instanceof SemPointer){
@@ -476,7 +481,7 @@ public class TypeResolver extends AstFullVisitor<SemType, TypeResolver.Mode> {
 		SemType stmtsType = null;
 
 		for(AstStmt stmt : whileStmt.bodyStmts()){
-			stmtsType = stmt.accept(this, mode);	
+			stmtsType = stmt.accept(this, mode);
 		}
 
 		SemType whileType = SemAn.ofType.get(whileStmt.cond());

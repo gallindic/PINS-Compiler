@@ -26,9 +26,6 @@ public class AstCompDecl extends AstMemDecl {
 		return ast;
 	}
 
-	@Override
-	public <Result, Arg> Result accept(AstVisitor<Result, Arg> visitor, Arg arg) {
-		return visitor.visit(this, arg);
-	}
+
 
 }

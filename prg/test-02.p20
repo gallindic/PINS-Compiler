@@ -1,0 +1,23 @@
+#Fibonacci do 49
+#F(49) = 49 : 7778742049 = 13 x 97 x 6168709
+
+typ table = [50]int;
+typ integer = int;
+
+var i : table;
+var index : integer;
+
+fun printInt(integer : int) : int = integer;
+
+fun main() : int = {
+    index = 2;
+    i[0] = 0;
+    i[1] = 1;
+    
+    while index < 50 do
+        i[index] = i[index - 1] + i[index - 2];
+        index = index + 1;
+    end;
+
+    printInt(i[49]);
+};

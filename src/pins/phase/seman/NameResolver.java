@@ -173,8 +173,6 @@ public class NameResolver extends AstFullVisitor<Object, NameResolver.Mode> {
 		if(mode.equals(Mode.BODY)){
 			symbTable.newScope();
 
-			whereExpr.expr().accept(this, mode);
-
 			for(AstDecl decl : whereExpr.decls()){
 				if(decl instanceof AstVarDecl)
 					continue;
@@ -184,9 +182,10 @@ public class NameResolver extends AstFullVisitor<Object, NameResolver.Mode> {
 			for(AstDecl decl : whereExpr.decls()){
 				decl.accept(this, Mode.BODY);		
 			}
-			
+			whereExpr.expr().accept(this, mode);
 			symbTable.oldScope();
 		}
+
 		return null;
 	}
 

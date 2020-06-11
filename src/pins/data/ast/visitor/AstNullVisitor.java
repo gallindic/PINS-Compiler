@@ -24,11 +24,6 @@ public class AstNullVisitor<Result, Arg> implements AstVisitor<Result, Arg> {
 	// DECLARATIONS
 
 	@Override
-	public Result visit(AstCompDecl compDecl, Arg arg) {
-		return null;
-	}
-
-	@Override
 	public Result visit(AstFunDecl funDecl, Arg arg) {
 		return null;
 	}

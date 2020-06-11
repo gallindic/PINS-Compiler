@@ -1,0 +1,27 @@
+var i : int;
+
+var exit_code : int;
+fun putChar(c : char) : char = ' ';
+
+fun main() : int = {
+    i = 10;
+
+    i = (p(i) > integer[0] where
+        var integer : [1]int;
+        fun p(num : int) : int = {
+            integer[0] = num + 90;
+            exit_code = 0;
+
+            if integer[0] > 90 then
+                integer[0] = integer[0] + 200;
+            end;
+
+            ( p2(integer[0]) where
+                fun p2(num2 : int) : int = num2 + 100;
+            );
+        };
+    );
+
+    putChar((i + 48 : char));
+    exit_code;
+};

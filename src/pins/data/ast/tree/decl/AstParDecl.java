@@ -21,8 +21,8 @@ public class AstParDecl extends AstMemDecl {
 	}
 	
 	@Override
-	public AstCompDecl clone() {
-		AstCompDecl ast = (AstCompDecl) super.clone();
+	public AstParDecl clone() {
+		AstParDecl ast = (AstParDecl) super.clone();
 		return ast;
 	}
 

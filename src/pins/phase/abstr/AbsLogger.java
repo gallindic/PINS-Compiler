@@ -67,7 +67,7 @@ public class AbsLogger implements AstVisitor<Object, String> {
 
 	// DECLARATIONS
 
-	@Override
+	/*@Override
 	public Object visit(AstCompDecl compDecl, String arg) {
 		if (logger == null)
 			return null;
@@ -83,7 +83,7 @@ public class AbsLogger implements AstVisitor<Object, String> {
 		}
 		logger.endElement();
 		return null;
-	}
+	}*/
 
 	@Override
 	public Object visit(AstFunDecl funDecl, String arg) {

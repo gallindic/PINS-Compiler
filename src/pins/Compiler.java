@@ -10,6 +10,9 @@ import pins.phase.lexan.*;
 import pins.phase.synan.*;
 import pins.phase.abstr.*;
 import pins.phase.seman.*;
+import pins.phase.memory.*;
+import pins.phase.imcgen.*;
+import pins.phase.imclin.*;
 
 /**
  * The compiler.
@@ -19,7 +22,7 @@ public class Compiler {
 	// COMMAND LINE ARGUMENTS
 
 	/** All valid phases of the compiler. */
-	private static final String phases = "none|lexan|synan|abstr|seman";
+	private static final String phases = "none|lexan|synan|abstr|seman|memory|imcgen|imclin";
 
 	/** Values of command line arguments. */
 	private static HashMap<String, String> cmdLine = new HashMap<String, String>();
@@ -152,6 +155,44 @@ public class Compiler {
 				if (Compiler.cmdLineArgValue("--target-phase").equals("seman"))
 					break;
 
+				// Memory layout.
+				try (Memory memory = new Memory()) {
+					Abstr.tree.accept(new MemEvaluator(), null);
+					Memory.frames.lock();
+					Memory.accesses.lock();
+					Memory.strings.lock();
+					AbsLogger logger = new AbsLogger(memory.logger);
+					logger.addSubvisitor(new SemLogger(memory.logger));
+					logger.addSubvisitor(new MemLogger(memory.logger));
+					Abstr.tree.accept(logger, "Decls");
+				}
+				if (Compiler.cmdLineArgValue("--target-phase").equals("memory"))
+					break;
+				
+				// Intermediate code generation.
+				try (ImcGen imcgen = new ImcGen()) {
+					Abstr.tree.accept(new CodeGenerator(), null);
+					ImcGen.exprImc.lock();
+					ImcGen.stmtImc.lock();
+					AbsLogger logger = new AbsLogger(imcgen.logger);
+					logger.addSubvisitor(new SemLogger(imcgen.logger));
+					logger.addSubvisitor(new MemLogger(imcgen.logger));
+					logger.addSubvisitor(new ImcLogger(imcgen.logger));
+					Abstr.tree.accept(logger, "Decls");
+				}
+				if (Compiler.cmdLineArgValue("--target-phase").equals("imcgen"))
+					break;
+
+				// Linearization of intermediate code.
+				try (ImcLin imclin = new ImcLin()) {
+					Abstr.tree.accept(new ChunkGenerator(), null);
+					imclin.log();
+
+					Interpreter interpreter = new Interpreter(ImcLin.dataChunks(), ImcLin.codeChunks());
+					System.out.println("EXIT CODE: " + interpreter.run("_main"));
+				}
+				if (Compiler.cmdLineArgValue("--target-phase").equals("imclin"))
+					break;
 
 				break;
 			}

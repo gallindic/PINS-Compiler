@@ -1,0 +1,14 @@
+#Program izpise znake od 0-z
+
+var i : int;
+
+fun putChar(c : char) : char = 'a';
+
+fun main() : void = {
+    i = 48; #0 v ASCII
+
+    while i <= ('z' : int) do
+        putChar((i : char));
+        i = i + 1;
+    end;
+};

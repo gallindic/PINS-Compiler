@@ -1,8 +1,10 @@
 package pins.phase.seman;
 
+import pins.common.report.Report;
 import pins.data.ast.tree.*;
 import pins.data.ast.tree.decl.*;
 import pins.data.ast.tree.expr.AstArrExpr;
+import pins.data.ast.tree.expr.AstAtomExpr;
 import pins.data.ast.tree.expr.AstCallExpr;
 import pins.data.ast.tree.expr.AstExpr;
 import pins.data.ast.tree.expr.AstNameExpr;
@@ -63,19 +65,27 @@ public class AddrResolver extends AstFullVisitor<Object, Object> {
 		assignStmt.src().accept(this, mode);
 		assignStmt.dst().accept(this, mode);
 
-		SemAn.isAddr.put(assignStmt.dst(), true);
+		if(!SemAn.isAddr.get(assignStmt.dst()))
+			throw new Report.Error(assignStmt, "Left side of assign stmt must be LVALUE!");
+
+		//SemAn.isAddr.put(assignStmt.dst(), true);
 
 		return null;
 	}
 
+	public Object visit(AstAtomExpr atomExpr, Object mode){
+		SemAn.isAddr.put(atomExpr, false);
+		return null;
+	}
+
 	public Object visit(AstNameExpr nameExpr, Object mode){
-		
+		SemAn.isAddr.put(nameExpr, true);
 		return null;
 	}
 
 	public Object visit(AstSfxExpr sfxExpr, Object mode){
 		if(sfxExpr.oper() == AstSfxExpr.Oper.PTR){
-		//	SemAn.isAddr.put(sfxExpr, true);
+			SemAn.isAddr.put(sfxExpr, true);
 		}
 		return null;
 	}
@@ -86,7 +96,7 @@ public class AddrResolver extends AstFullVisitor<Object, Object> {
 
 		SemType array = SemAn.ofType.get(arrExpr.arr());
 		if(array instanceof SemArray){
-		//	SemAn.isAddr.put(arrExpr, true);                                                                                  
+			SemAn.isAddr.put(arrExpr, true);                                                                                  
 		}
 
 		return null;

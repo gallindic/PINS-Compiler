@@ -67,20 +67,24 @@ arr
   : atomic
     { $ast = $atomic.ast; }
   | i=LB expr RB type
-    { $ast = new AstArrType(new Location($i.getLine(), $i.getCharPositionInLine(), $type.ast.location().getEndLine(), $type.ast.location().getEndColumn()), $type.ast, $expr.ast ) ;}
+    { $ast = new AstArrType(new Location($i.getLine(), $i.getCharPositionInLine(), $type.ast.location().getEndLine(), $type.ast.location().getEndColumn()), 
+      $type.ast, $expr.ast ) ;}
   ;
 
 atomic
   returns [AstType ast]
   : //type -> VOID
     i=VOID
-    { $ast = new AstAtomType(new Location($i.getLine(),$i.getCharPositionInLine(),$i.getLine(),$i.getCharPositionInLine()+$i.text.length() - 1), AstAtomType.Type.VOID );}
+    { $ast = new AstAtomType(new Location($i.getLine(),$i.getCharPositionInLine(),$i.getLine(),$i.getCharPositionInLine()+$i.text.length() - 1), 
+      AstAtomType.Type.VOID );}
   | //type -> CHAR
     i=CHAR
-    { $ast = new AstAtomType(new Location($i.getLine(),$i.getCharPositionInLine(),$i.getLine(),$i.getCharPositionInLine()+$i.text.length() - 1), AstAtomType.Type.CHAR );}
+    { $ast = new AstAtomType(new Location($i.getLine(),$i.getCharPositionInLine(),$i.getLine(),$i.getCharPositionInLine()+$i.text.length() - 1),
+      AstAtomType.Type.CHAR );}
   | //type -> INT
     i=INT
-    { $ast = new AstAtomType(new Location($i.getLine(),$i.getCharPositionInLine(),$i.getLine(),$i.getCharPositionInLine()+$i.text.length() - 1), AstAtomType.Type.INT );}
+    { $ast = new AstAtomType(new Location($i.getLine(),$i.getCharPositionInLine(),$i.getLine(),$i.getCharPositionInLine()+$i.text.length() - 1), 
+      AstAtomType.Type.INT );}
   | //type -> ID
     i=ID
     { $ast = new AstNameType(new Location($i.getLine(),$i.getCharPositionInLine(),$i.getLine(),$i.getCharPositionInLine()+$i.text.length() - 1), $i.text );}

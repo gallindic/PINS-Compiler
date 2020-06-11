@@ -1,0 +1,25 @@
+var i : int;
+var n : int;
+
+fun calculation(number : int) : int = (
+    p(number) where
+        var integer : int;
+        fun p(num : int) : int = {
+            i = 50; 
+            integer = num + 90 + (-(-i));
+            ( p2(integer) where
+                fun p2(num : int) : int = i + num;
+            );
+        };
+    );
+
+fun printInt(integer : int) : int = integer;
+
+fun main() : int = {
+    n = 15;
+    i = (n < 20) * 5 + 5;
+    
+    i = calculation(i);
+
+    printInt(i);
+};

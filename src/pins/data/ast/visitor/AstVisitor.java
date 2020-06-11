@@ -23,10 +23,6 @@ public interface AstVisitor<Result, Arg> {
 
 	// DECLARATIONS
 
-	public default Result visit(AstCompDecl compDecl, Arg arg) {
-		throw new Report.InternalError();
-	}
-
 	public default Result visit(AstFunDecl funDecl, Arg arg) {
 		throw new Report.InternalError();
 	}

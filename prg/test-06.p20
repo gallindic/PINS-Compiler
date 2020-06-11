@@ -1,0 +1,72 @@
+#Bubble sort DESC
+
+var tab : [5]int;
+var exit_code : int;
+
+fun putChar(c : char) : char = ' ';
+
+fun outputStartArray() : char = {
+    putChar((48 + tab[0] : char));
+    putChar((48 + tab[1] : char));
+    putChar((48 + tab[2] : char));
+    putChar((48 + tab[3] : char));
+    putChar((48 + tab[4] : char));
+    putChar(' ');
+    putChar('=');
+    putChar('>');
+    putChar(' ');
+};
+
+fun outputSortedArray() : char = {
+    putChar((48 + tab[0] : char));
+    putChar((48 + tab[1] : char));
+    putChar((48 + tab[2] : char));
+    putChar((48 + tab[3] : char));
+    putChar((48 + tab[4] : char));
+    putChar(' ');
+};
+
+fun main() : int = {
+    tab[0] = 9;
+    tab[1] = 6;
+    tab[2] = 3;
+    tab[3] = 9;
+    tab[4] = 8;
+    
+    outputStartArray();
+
+    (sort() where
+        var index : int;
+        var index2 : int;
+        var tmp : int;
+        var max : int;
+
+        fun sort() : void = {
+            index = 0;
+            tmp = 0;
+
+            while index < 5 do
+                index2 = index;
+                while index2 < 5 do
+                    if index2 + 1 < 5 then
+                        if tab[index2] < tab[index2 + 1] then
+                            tmp = tab[index2];
+                            tab[index2] = tab[index2 + 1];
+                            tab[index2 + 1] = tmp;
+                        end;
+                    end;
+
+                    index2 = index2 + 1;
+                end;
+
+                index = index + 1;
+            end;
+
+            exit_code = 0;
+        };
+    );
+
+    outputSortedArray();
+
+    exit_code;
+};

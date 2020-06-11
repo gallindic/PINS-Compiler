@@ -493,7 +493,8 @@ public class PinsParser extends Parser {
 				match(RB);
 				setState(121);
 				((ArrContext)_localctx).type = type();
-				 ((ArrContext)_localctx).ast =  new AstArrType(new Location(((ArrContext)_localctx).i.getLine(), ((ArrContext)_localctx).i.getCharPositionInLine(), ((ArrContext)_localctx).type.ast.location().getEndLine(), ((ArrContext)_localctx).type.ast.location().getEndColumn()), ((ArrContext)_localctx).type.ast, ((ArrContext)_localctx).expr.ast ) ;
+				 ((ArrContext)_localctx).ast =  new AstArrType(new Location(((ArrContext)_localctx).i.getLine(), ((ArrContext)_localctx).i.getCharPositionInLine(), ((ArrContext)_localctx).type.ast.location().getEndLine(), ((ArrContext)_localctx).type.ast.location().getEndColumn()), 
+				      ((ArrContext)_localctx).type.ast, ((ArrContext)_localctx).expr.ast ) ;
 				}
 				break;
 			default:
@@ -543,7 +544,8 @@ public class PinsParser extends Parser {
 				{
 				setState(126);
 				((AtomicContext)_localctx).i = match(VOID);
-				 ((AtomicContext)_localctx).ast =  new AstAtomType(new Location(((AtomicContext)_localctx).i.getLine(),((AtomicContext)_localctx).i.getCharPositionInLine(),((AtomicContext)_localctx).i.getLine(),((AtomicContext)_localctx).i.getCharPositionInLine()+(((AtomicContext)_localctx).i!=null?((AtomicContext)_localctx).i.getText():null).length() - 1), AstAtomType.Type.VOID );
+				 ((AtomicContext)_localctx).ast =  new AstAtomType(new Location(((AtomicContext)_localctx).i.getLine(),((AtomicContext)_localctx).i.getCharPositionInLine(),((AtomicContext)_localctx).i.getLine(),((AtomicContext)_localctx).i.getCharPositionInLine()+(((AtomicContext)_localctx).i!=null?((AtomicContext)_localctx).i.getText():null).length() - 1), 
+				      AstAtomType.Type.VOID );
 				}
 				break;
 			case CHAR:
@@ -551,7 +553,8 @@ public class PinsParser extends Parser {
 				{
 				setState(128);
 				((AtomicContext)_localctx).i = match(CHAR);
-				 ((AtomicContext)_localctx).ast =  new AstAtomType(new Location(((AtomicContext)_localctx).i.getLine(),((AtomicContext)_localctx).i.getCharPositionInLine(),((AtomicContext)_localctx).i.getLine(),((AtomicContext)_localctx).i.getCharPositionInLine()+(((AtomicContext)_localctx).i!=null?((AtomicContext)_localctx).i.getText():null).length() - 1), AstAtomType.Type.CHAR );
+				 ((AtomicContext)_localctx).ast =  new AstAtomType(new Location(((AtomicContext)_localctx).i.getLine(),((AtomicContext)_localctx).i.getCharPositionInLine(),((AtomicContext)_localctx).i.getLine(),((AtomicContext)_localctx).i.getCharPositionInLine()+(((AtomicContext)_localctx).i!=null?((AtomicContext)_localctx).i.getText():null).length() - 1),
+				      AstAtomType.Type.CHAR );
 				}
 				break;
 			case INT:
@@ -559,7 +562,8 @@ public class PinsParser extends Parser {
 				{
 				setState(130);
 				((AtomicContext)_localctx).i = match(INT);
-				 ((AtomicContext)_localctx).ast =  new AstAtomType(new Location(((AtomicContext)_localctx).i.getLine(),((AtomicContext)_localctx).i.getCharPositionInLine(),((AtomicContext)_localctx).i.getLine(),((AtomicContext)_localctx).i.getCharPositionInLine()+(((AtomicContext)_localctx).i!=null?((AtomicContext)_localctx).i.getText():null).length() - 1), AstAtomType.Type.INT );
+				 ((AtomicContext)_localctx).ast =  new AstAtomType(new Location(((AtomicContext)_localctx).i.getLine(),((AtomicContext)_localctx).i.getCharPositionInLine(),((AtomicContext)_localctx).i.getLine(),((AtomicContext)_localctx).i.getCharPositionInLine()+(((AtomicContext)_localctx).i!=null?((AtomicContext)_localctx).i.getText():null).length() - 1), 
+				      AstAtomType.Type.INT );
 				}
 				break;
 			case ID:

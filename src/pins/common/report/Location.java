@@ -111,19 +111,20 @@ public class Location implements Locatable, Loggable {
 		return begLine + "." + begColumn + " - " + endLine + "." + endColumn;
 	}
 
-	public int getStartLine(){
-		return this.begLine;
-	}
 
-	public int getEndLine(){
-		return this.endLine;
+	public int getStartLine(){
+		return begLine;
 	}
 
 	public int getStartColumn(){
-		return this.begColumn;
+		return begColumn;
+	}
+
+	public int getEndLine(){
+		return endLine;
 	}
 
 	public int getEndColumn(){
-		return this.endColumn;
+		return endColumn;
 	}
 }

@@ -27,13 +27,6 @@ public class AstFullVisitor<Result, Arg> implements AstVisitor<Result, Arg> {
 	// DECLARATIONS
 
 	@Override
-	public Result visit(AstCompDecl compDecl, Arg arg) {
-		if (compDecl.type() != null)
-			compDecl.type().accept(this, arg);
-		return null;
-	}
-
-	@Override
 	public Result visit(AstFunDecl funDecl, Arg arg) {
 		if (funDecl.pars() != null)
 			funDecl.pars().accept(this, arg);
